@@ -25,9 +25,17 @@ class DropBoxController {
 
            this.uploadTask(event.target.files)
 
-           this.snackModalEl.style.display = 'block';
+           this.modalShow();
+
+           this.inputFilesEl.values = '';
 
         })
+
+    }
+
+    modalShow(show = true ) {
+       
+        this.snackModalEl.style.display = (show) ? 'block' : 'none';
 
     }
 
@@ -45,6 +53,9 @@ class DropBoxController {
 
           ajax.onload = event => {
 
+            
+            this.modalShow(false);
+
            try {
 
             resolve(JSON.parse(ajax.responseText))
@@ -58,6 +69,8 @@ class DropBoxController {
           } 
 
           ajax.onerror = event => {
+
+            this.modalShow(false);
 
             reject(event)
 
