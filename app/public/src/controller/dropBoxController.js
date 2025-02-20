@@ -29,7 +29,7 @@ class DropBoxController {
           };
         
           // Initialize Firebase
-           initializeApp(firebaseConfig);
+           firebase.initializeApp(firebaseConfig);
 
     }
 
