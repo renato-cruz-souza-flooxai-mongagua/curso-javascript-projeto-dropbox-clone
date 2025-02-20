@@ -46,6 +46,8 @@ class DropBoxController {
 
         this.inputFilesEl.addEventListener('change', event => {
 
+            this.btnSendFileEl.disabled = true
+
            this.uploadTask(event.target.files).then(responses => {
 
             responses.forEach(resp => {
@@ -56,13 +58,28 @@ class DropBoxController {
 
             });
 
-           });
+            uploadComplete()
+
+           }).catch(err => {
+
+            this.uploadComplete()
+            console.log(err)
+
+           })
 
            this.modalShow(false);
 
            this.inputFilesEl.values = '';
 
         })
+
+    }
+
+    uploadComplete() {
+
+        this.modalShow(false);
+        this.inputFilesEl.values = '';
+        this.btnSendFileEl.disabled = false
 
     }
 
