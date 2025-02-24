@@ -5,6 +5,7 @@ class DropBoxController {
       this.currentFolder = ['Home'];
 
         this.onselectionchange = new Event('selectionchange');
+        this.navEl = document.querySelector('#browse-location');
 
         this.btnSendFileEl = document.querySelector('#btn-send-file')
         this.inputFilesEl = document.querySelector('#files')
@@ -21,7 +22,8 @@ class DropBoxController {
 
         this.connectFirebase();
         this.initEvents();
-        this.readFiles()
+        this.openFolder();
+        
 
     }
 
@@ -185,9 +187,11 @@ class DropBoxController {
 
     }
 
-    getFireBaseRef() {
+    getFireBaseRef(path) {
 
-        return firebase.database().ref('files')
+      if(!path) path = this.currentFolder.join('/')
+
+        return firebase.database().ref(path)
 
     }
 
@@ -488,6 +492,8 @@ class DropBoxController {
 
     readFiles() {
 
+        this.lastFolder = this.currentFolder.join('/');
+
        this.getFireBaseRef().on('value', snapshot => {
 
         this.listFilesEL.innerHTML = '';
@@ -497,6 +503,12 @@ class DropBoxController {
             let key = snapshotItem.key;
             let data = snapshotItem.val();
 
+
+            if (data.type) {
+              this.listFilesEl.appendChild(this.getFileView(data, key));
+            }
+    
+
             this.listFilesEL.appendChild(this.getFileView(data, key))
 
         })
@@ -505,8 +517,44 @@ class DropBoxController {
 
     }
 
+    openFolder(){
+
+      if(this.lastFolder) this.getFireBaseRef(this.lastFolder).off('value');
+      this.renderNav()
+      this.readFiles()
+
+    }
+
+    renderNav() {
+
+      let nav = document.createElement('nav');
+
+      for (let i = 0; i < this.currentFolder.length; i++) {
+
+        let folderName = this.currentFolder[i];
+        
+
+      }
+
+    }
+
     initEventsLi(li) {
 
+      li.addEventListener('dblclick', e => {
+
+        let file = JSON.parse(li.dataset.file);
+  
+        switch (file.type) {
+          case 'folder':
+            this.currentFolder.push(file.name)
+            this.openFolder()
+            break;
+  
+          default:
+            window.open('/file?path=' + file.path)
+        }
+  
+      })
 
 
         li.addEventListener('click', e => { 
