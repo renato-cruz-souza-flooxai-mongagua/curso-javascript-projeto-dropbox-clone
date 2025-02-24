@@ -2,6 +2,8 @@ class DropBoxController {
 
     constructor(){
 
+      this.currentFolder = ['Home'];
+
         this.onselectionchange = new Event('selectionchange');
 
         this.btnSendFileEl = document.querySelector('#btn-send-file')
@@ -12,7 +14,7 @@ class DropBoxController {
         this.timeLeftEl = this.snackModalEl.querySelector('.timeleft')
         this.listFilesEL = document.querySelector('#list-of-files-and-directories')
 
-        this.btnNewFolder = document.querySelector('#btn new folder')
+        this.btnNewFolder = document.querySelector('#btn-new-folder')
         this.btnRename = document.querySelector('#btn-rename')
         this.btnDelete = document.querySelector('#btn-delete')
 
@@ -64,10 +66,22 @@ class DropBoxController {
       });
       
       return Promise.all(promises);
+      
     }
-    
 
     initEvents() {
+
+      this.btnNewFolder.addEventListener('click', e => {
+        let name = prompt('Nome da nova pasta:');
+  
+        if (name) {
+          this.getFireBaseRef().push().set({
+            name, 
+            type: 'folder',
+            path: this.currentFolder.join('/')
+          })
+        }
+      })
 
       this.btnDelete.addEventListener("click", (e) => {
         this.removeTask()
