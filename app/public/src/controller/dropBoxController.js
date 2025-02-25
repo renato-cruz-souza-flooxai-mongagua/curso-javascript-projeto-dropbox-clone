@@ -1,3 +1,5 @@
+
+
 class DropBoxController {
   constructor() {
 
@@ -204,23 +206,35 @@ class DropBoxController {
     let promises = [];
 
     [...files].forEach((file) => {
-      let formData = new FormData();
+    
+     promises.push(new Promise((resolve, reject)=> {
 
-      formData.append("input-file", file);
+      let fileRef = firebase.storage().ref(this.currentFolder.join('/')).child(file.name);
 
-      promises.push(
-        this.ajax(
-          "/upload",
-          "POST",
-          formData,
-          () => {
-            this.uploadProgress(event, file);
-          },
-          () => {
-            this.startUploadTime = Date.now();
-          }
-        )
-      );
+      let task = fileRef.put(file);
+ 
+      task.on('state_changed', snapshot=>{
+ 
+        this.uploadProgress({
+          loaded: snapshot.bytesTransferrend,
+          total: snapshot.totalBytes
+        }, file)
+       console.log('progress', snapshot)
+ 
+      }, error => {
+ 
+       console.error(error)
+       reject(error);
+ 
+      }, snapshot => {
+ 
+       console.log('sucess', snapshot)
+       resolve();
+ 
+      });
+
+     }))
+
     });
 
     return Promise.all(promises);
