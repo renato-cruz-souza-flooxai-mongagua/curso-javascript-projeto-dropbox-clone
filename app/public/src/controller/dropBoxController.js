@@ -226,7 +226,16 @@ class DropBoxController {
        console.error(error)
        reject(error);
  
-      }, snapshot => {
+      }, () => {
+
+        fileRef.getMetadata().then(metadata => {
+
+          resolve(metadata)
+
+        }).catch(err => {
+
+          reject(err)
+        })
  
        console.log('sucess', snapshot)
        resolve();
